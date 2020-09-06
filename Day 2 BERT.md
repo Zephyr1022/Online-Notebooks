@@ -376,4 +376,58 @@ def __init__(self, sentences=None, size=100, alpha=0.025, window=5, min_count=5,
   -  CBoW
 - **Contextualised Word Embeddings**
   - known as distributional (or fixed) word embeddings
-  - 
+
+
+
+Bert Model 
+
+Input: 
+
+- 句子的开始([CLS])和分隔/结尾([SEP])的特别标记
+- BERT‘s tokenizer中的token id
+
+
+
+注意“embeddings”一词是如何表示的:
+
+[‘em’, ‘##bed’, ‘##ding’, ‘##s’]
+
+原来的单词被**分成更小的子单词和字符**。这些子单词前面的两个#号只是我们的tokenizer用来表示这个子单词或字符是一个更大单词的一部分，并在其前面加上另一个子单词的方法。因此，例如，' ##bed ' token与' bed 'token是分开的，当一个较大的单词中出现子单词bed时，使用第一种方法，当一个独立的token “thing you sleep on”出现时，使用第二种方法。
+
+使用 **Tokenizer** 会将文本**拆分成字**并生成相应的id。[实例](https://www.cnblogs.com/dogecheng/p/11617940.html)
+
+我们需要提供一个字典，**字典存放着 token 和 id 的映射**。字典里还有 BERT 里特别的 token。
+
+数据集是两个 excel 表，分别存放着正面和负面评价，下面是负面评价的内容
+
+<img src="Day 2 BERT.assets/1782235-20191003155355113-266436241.png" alt="img" style="zoom: 100%;" />
+
+
+
+
+
+BERT 的模型结构是一个多层双向Transformer 编码器，整体的模型结构其实就是Transformer，但BERT的创新点在于：
+
+1. 引入了掩码使得Transformer编码器能够使用双向信息
+2. 加入两个预训练任务，实现NLP领域的迁移学习
+
+BERT在预训练阶段输入基本和Transformer结构是相同的，主要的区别是加入了**CLS和SEP**两个特殊字符，每个序列的第一个标记始终是特殊分类嵌入CLS，该特殊标记对应的最终隐藏状态（即Transformer 的输出）被**用作分类任务中**该序列的总表示。对于非分类任务，这个最终隐藏状态将被忽略，SEP则是用来区别被打包到一起的句子对输入。
+
+##### 1, WordPiece
+
+BERT在处理输入时，会采用WordPiece方法对输入进行分割.
+
+##### 2, Segment Embeddings
+
+**3, Position Embeddings**
+
+BERT在每个序列中随机遮蔽 15% 的标记，然后通过最后使用softmax去预测被遮蔽的字，但直接使用这样的预训练任务会有两个问题：
+
+1. 预训练和微调之间造成了不匹配，因为 [MASK] 标记在微调期间从未出现过
+2. 使用 Transformer 的每批次数据中只有 15% 的标记被预测，这意味着模型可能需要更多的预训练步骤来==收敛==
+
+
+
+#### 微调 Fine-tuning
+
+https://blog.csdn.net/u011984148/article/details/99921480

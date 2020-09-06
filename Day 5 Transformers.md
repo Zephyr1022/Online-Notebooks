@@ -151,3 +151,110 @@ The output of the decoder is feed into a linear layer with softmax over the voca
 - ##### https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/
 
 - ##### http://jalammar.github.io/illustrated-transformer/
+
+
+
+###### [手把手教你用Pytorch-Transformers——部分源码解读及相关说明（一）](https://www.cnblogs.com/dogecheng/p/11907036.html)
+
+> github：https://github.com/huggingface/transformers
+
+BertConfig 是一个配置类，存放了 BertModel 的配置。比如：
+
+- **vocab_size_or_config_json_file：**字典大小，默认30522
+- **hidden_size：**Encoder 和 Pooler 层的大小，默认768
+- **num_hidden_layers：**Encoder 的隐藏层数，默认12
+- **num_attention_heads：**每个 Encoder 中 attention 层的 head 数，默认12
+
+###### [BertModel](https://www.cnblogs.com/dogecheng/p/11907036.html)
+
+实现了基本的Bert模型，从构造函数可以看到用到了embeddings，encoder和pooler。
+
+下面是允许输入到模型中的参数，模型至少需要有1个输入： input_ids 或 input_embeds。
+
+- **input_ids** 就是一连串 token 在字典中的对应id。形状为 (batch_size, sequence_length)。
+
+- **token_type_ids** 可选。就是 token 对应的句子id，值为0或1（0表示对应的token属于第一句，1表示属于第二句）。形状为(batch_size, sequence_length)。
+
+  
+
+Bert 的输入需要用 [CLS] 和 [SEP] 进行标记，开头用 [CLS]，句子结尾用 [SEP]
+
+两个句子：
+
+  tokens：[CLS] is this jack ##son ##ville ? [SEP] no it is not . [SEP]
+
+  **token_type_ids：0  0 0  0  0   0    0  0  1 1 1 1  1  1**
+
+一个句子：
+
+  tokens：[CLS] the dog is hairy . [SEP]
+
+  token_type_ids：0  0  0  0 0   0  0
+
+
+
+###### BertForQuestionAnswering[#](https://www.cnblogs.com/dogecheng/p/11907036.html#4085574841)
+
+###### tokenization相关[#](https://www.cnblogs.com/dogecheng/p/11907036.html#4027244739)
+
+对于文本，常见的操作是分词然后将 **词-id** 用字典保存，再将分词后的词用 id 表示，然后经过 Embedding 输入到模型中。
+
+Bert 也不例外，但是 **Bert 能以 字级别 作为输入**，在处理中文文本时我们可以不用先分词，直接用 Bert 将文本转换为 token，然后用相应的 id 表示。
+
+tokenization 库就是用来将文本切割成为 字或词 的，下面对其进行简单的介绍
+
+**BasicTokenizer**
+
+基本的 tokenization 类，构造函数可以接收以下3个参数
+
+- **do_lower_case：**是否将输入转换为小写，默认True
+- **never_split：**可选。输入一个列表，列表内容为不进行 tokenization 的单词
+- **tokenize_chinese_chars：**可选。是否对中文进行 tokenization，默认True
+
+##### WordpieceTokenizer
+
+**tokenize()函数**
+
+这个类的 tokenize() 函数使用 **贪婪最长匹配优先算法**（greedy longest-match-first algorithm） 将一段文本进行 tokenization ，变成相应的 wordpiece，**一般针对英文**
+
+> example ：
+>
+> ​     input = "unaffable" → output = ["un", "##aff", "##able"]
+>
+>  # 它将 “unaffable” 分割成了 “un”, “##aff” 和 “##able”
+
+
+
+##### BertTokenizer
+
+一个专为 Bert 使用的 tokenization 类，使用 Bert 的时候一般情况下用这个就可以了，构造函数可以传入以下参数
+
+- **vocab_file：**一个字典文件，每一行对应一个 wordpiece
+- **do_lower_case：**是否将输入统一用小写表示，默认True
+- **do_basic_tokenize：**在使用 WordPiece 之前是否先用 BasicTokenize
+- **max_len：**序列的最大长度
+- **never_split：**一个列表，传入不进行 tokenization 的单词，只有在 do_wordpiece_only 为 False 时有效
+
+我们可以使用 **tokenize() 函数对文本进行 tokenization**，也可以通过 **encode() 函数对 文本 进行 tokenization 并将 token 用相应的 id 表示**，然后输入到 Bert 模型中
+
+
+
+使用 **encode()** 函数将 tokenization 后的内容用相应的 id 表示，主要由以下参数：
+
+**注意 encode 只会返回 ==token id==**，Bert 我们还需要输入==句子 id==，这时候我们可以使用 **encode_plus()**，它返回 token id 和 句子 id
+
+encode() 实际上就是用了 encode_plus，但是只选择返回 token_id，代码如下
+
+```python
+encoded_inputs = self.encode_plus(text,
+                                  text_pair=text_pair,
+                                  max_length=max_length,
+                                  add_special_tokens=add_special_tokens,
+                                  stride=stride,
+                                  truncation_strategy=truncation_strategy,
+                                  return_tensors=return_tensors,
+                                  **kwargs)
+
+return encoded_inputs["input_ids"]
+```
+

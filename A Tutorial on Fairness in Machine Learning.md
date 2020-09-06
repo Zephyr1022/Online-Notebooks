@@ -1,4 +1,10 @@
-##### Git
+#### Typora 完全使用[详解](https://sspai.com/post/54912)
+
+##### Typora同步到[GitHub](https://juejin.im/post/6844904088618942478)
+
+- 让脚本自动化
+- MacOS中使用git管理
+- Git[将本地文件夹添加到远程仓库](https://blog.csdn.net/qq_34803821/article/details/86648313)
 
 ## [简单的代码提交流程](https://blog.csdn.net/qq_37577660/article/details/78565899)
 
