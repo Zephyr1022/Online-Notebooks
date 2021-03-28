@@ -36,6 +36,14 @@ Markdown continues.
 
 0, cd /Users/hxwh/Documents/Online-Notebooks
 
+
+
+8f5ca21b92fc66ca65b1c8905e353271c9de301f
+
+```shell
+git clone https://github.com/username/repo.git
+```
+
 0， Location: cd /Users/hxwh/Library/Mobile\ Documents/com\~apple\~CloudDocs/Education/UTSA/GRA/Online-Notebooks
 
 1. git status 查看工作区代码相对于暂存区的差别
