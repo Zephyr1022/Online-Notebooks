@@ -32,24 +32,17 @@ Markdown continues.
 
 ## [简单的代码提交流程](https://blog.csdn.net/qq_37577660/article/details/78565899)
 
+
+
+0, cd /Users/hxwh/Documents/Online-Notebooks
+
 0， Location: cd /Users/hxwh/Library/Mobile\ Documents/com\~apple\~CloudDocs/Education/UTSA/GRA/Online-Notebooks
 
 1. git status 查看工作区代码相对于暂存区的差别
-
-2. git add . 将当前目录下修改的所有代码从工作区添加到暂存区 . 代表当前目录
-
-3. git commit -m ‘注释’ 将缓存区内容添加到本地仓库 
-
-   git commit -a -m ""　
-
+2. ==git add .==将当前目录下修改的所有代码从工作区添加到暂存区 . 代表当前目录 ==每次新文件要用==
+3. git commit -m ‘注释’ 将缓存区内容添加到本地仓库 git commit -a -m ""
 4. git push origin master 将本地版本库推送到远程服务器，
    origin是远程主机，master表示是远程服务器上的master分支，分支名是可以修改的
-
-
-
-
-
-
 
 1. git commit -m ‘message’
    -m 参数表示可以直接输入后面的“message”，如果不加 -m参数，那么是不能直接输入message的，而是会调用一个编辑器一般是vim来让你输入这个message，
